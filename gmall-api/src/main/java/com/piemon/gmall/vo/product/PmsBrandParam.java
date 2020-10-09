@@ -5,12 +5,13 @@ import lombok.Data;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import javax.validation.constraints.Min;
+import java.io.Serializable;
 
 /**
  * 品牌传递参数
  */
 @Data
-public class PmsBrandParam {
+public class PmsBrandParam implements Serializable {
     @ApiModelProperty(value = "品牌名称",required = true)
     @NotEmpty(message = "名称不能为空")
     private String name;

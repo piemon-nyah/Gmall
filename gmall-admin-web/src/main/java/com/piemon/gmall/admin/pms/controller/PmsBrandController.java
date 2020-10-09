@@ -5,6 +5,7 @@ import com.piemon.gmall.pms.entity.Brand;
 import com.piemon.gmall.pms.service.BrandService;
 import com.piemon.gmall.to.CommonResult;
 //import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.piemon.gmall.vo.PageInfoVo;
 import com.piemon.gmall.vo.product.PmsBrandParam;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -17,6 +18,7 @@ import java.util.List;
 /**
  * 品牌功能Controller
  */
+@CrossOrigin
 @RestController
 @Api(tags = "PmsBrandController",description = "商品品牌管理")
 @RequestMapping("/brand")
@@ -71,9 +73,8 @@ public class PmsBrandController {
         CommonResult commonResult = new CommonResult();
 
         //TODO 根据品牌名称分页获取品牌列表
-
-
-        return commonResult;
+        PageInfoVo pageInfoVo = brandService.brandPageInfo(keyword,pageNum,pageSize);
+        return commonResult.success(pageInfoVo);
     }
 
     @ApiOperation(value = "根据编号查询品牌信息")
