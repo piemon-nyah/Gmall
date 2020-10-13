@@ -11,13 +11,17 @@ import com.piemon.gmall.to.CommonResult;
 //import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,6 +29,7 @@ import java.util.Map;
 /**
  * 后台用户管理
  */
+@Slf4j
 @CrossOrigin
 @RestController
 @Api(tags = "AdminController", description = "后台用户管理")
@@ -42,10 +47,27 @@ public class UmsAdminController {
 
     @ApiOperation(value = "用户注册")
     @PostMapping(value = "/register")
-    public Object register(@RequestBody UmsAdminParam umsAdminParam, BindingResult result) {
+    public Object register(@Valid @RequestBody UmsAdminParam umsAdminParam,BindingResult result) {
         Admin admin = null;
-        //TODO 完成注册功能
+/**
+ * 利用aop实现
+ */
+//        int errorCount = result.getErrorCount();
+//
+//        if(errorCount>0){
+//            List<FieldError> fieldErrors = result.getFieldErrors();
+//            fieldErrors.forEach((fieldError) -> {
+//                String field = fieldError.getField();
+//                log.debug("属性:{},传来的值是{},校验出错,出错的提示消息:{}",
+//                        field,fieldError.getRejectedValue(),fieldError.getDefaultMessage());
+//            });
+//            return new CommonResult().validateFailed(result);
+//        }else {
+//            //TODO 完成注册功能
+//
+//        }
 
+        log.debug("需要注册的用户详情：{}",umsAdminParam);
         return new CommonResult().success(admin);
     }
 

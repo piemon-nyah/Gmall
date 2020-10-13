@@ -2,6 +2,10 @@ package com.piemon.gmall.pms.mapper;
 
 import com.piemon.gmall.pms.entity.ProductCategory;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.piemon.gmall.vo.product.PmsProductCategoryWithChildrenItem;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 /**
  * <p>
@@ -12,5 +16,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  * @since 2020-10-05
  */
 public interface ProductCategoryMapper extends BaseMapper<ProductCategory> {
+
+    List<PmsProductCategoryWithChildrenItem> listCatelogWithChilder(Integer i);
 
 }

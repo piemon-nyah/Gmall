@@ -9,7 +9,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * </p>
  *
  * @author piemon
- * @since 2020-10-05
+ * @since 2020-10-12
  */
 public interface AlbumPicService extends IService<AlbumPic> {
 
