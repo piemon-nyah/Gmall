@@ -9,6 +9,7 @@ import com.piemon.gmall.vo.product.PmsProductParam;
 import com.piemon.gmall.vo.product.PmsProductQueryParam;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -19,6 +20,7 @@ import java.util.List;
 /**
  * 商品管理Controller
  */
+@Slf4j
 @CrossOrigin
 @RestController
 @Api(tags = "PmsProductController", description = "商品管理")
@@ -32,6 +34,7 @@ public class PmsProductController {
     public Object create(@RequestBody PmsProductParam productParam,
                          BindingResult bindingResult) {
         //TODO 查询所有一级分类及子分类
+        productService.saveProduct(productParam);
         return new CommonResult().success(null);
     }
 
