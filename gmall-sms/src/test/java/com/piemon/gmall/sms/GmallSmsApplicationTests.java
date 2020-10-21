@@ -1,6 +1,6 @@
 package com.piemon.gmall.sms;
 
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
