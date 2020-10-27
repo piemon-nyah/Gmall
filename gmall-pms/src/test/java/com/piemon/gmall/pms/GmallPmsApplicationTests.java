@@ -1,17 +1,21 @@
 package com.piemon.gmall.pms;
 
 import com.piemon.gmall.pms.entity.Brand;
-import com.piemon.gmall.pms.entity.Product;
+
 import com.piemon.gmall.pms.service.BrandService;
 import com.piemon.gmall.pms.service.ProductService;
-import org.junit.jupiter.api.Test;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.test.context.junit4.SpringRunner;
 
+@RunWith(SpringRunner.class)
 @SpringBootTest
-class GmallPmsApplicationTests {
+public class GmallPmsApplicationTests {
 
     @Autowired
     ProductService productService;
