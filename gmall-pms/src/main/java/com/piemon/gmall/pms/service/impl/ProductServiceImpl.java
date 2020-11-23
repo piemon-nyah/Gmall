@@ -16,10 +16,11 @@ import com.piemon.gmall.vo.PageInfoVo;
 import com.piemon.gmall.vo.product.PmsProductParam;
 import com.piemon.gmall.vo.product.PmsProductQueryParam;
 import io.searchbox.client.JestClient;
-import io.searchbox.core.Delete;
-import io.searchbox.core.DocumentResult;
-import io.searchbox.core.Index;
+import io.searchbox.core.*;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.lucene.search.join.ScoreMode;
+import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.springframework.aop.framework.AopContext;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -295,15 +296,10 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
         productMapper.updateById(product);
     }
 
-    @Override
-    public Product productInfo(Long id) {
-        return productMapper.selectById(id);
-    }
-
     /**
-     * 保存商品基础信息
+     * 保存商品基础信息（核心方法），与主方法共用事务
      */
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    //@Transactional(propagation = Propagation.REQUIRES_NEW)
     public void saveBaseInfo(PmsProductParam productParam){
         //pms_product:保存商品基本信息
         Product product = new Product();
@@ -312,9 +308,9 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
         threadLocal.set(product.getId());
     }
     /**
-     * 保存这个商品对应的所有属性的值
+     * 保存这个商品对应的所有属性的值（核心方法），与主方法共用事务
      */
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    //@Transactional(propagation = Propagation.REQUIRES_NEW)
     public void saveProductAttributeValue(PmsProductParam productParam){
         //pms_product_attribute_value:保存这个商品对应的所有属性的值
         List<ProductAttributeValue> valueList = productParam.getProductAttributeValueList();
@@ -325,7 +321,7 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
     }
 
     /**
-     * 保存商品的满减信息
+     * 保存商品的满减信息（非核心方法），单独开事务，出错不影响整体回滚
      */
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void saveFullReduction(PmsProductParam productParam) {
@@ -337,7 +333,7 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
     }
 
     /**
-     * 保存商品满减打折
+     * 保存商品满减打折（非核心方法），单独开事务，出错不影响整体回滚
      */
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void saveProductLadder(PmsProductParam productParam) {
@@ -349,7 +345,7 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
     }
 
     /**
-     * 保存商品库存
+     * 保存商品库存（非核心方法），单独开事务，出错不影响整体回滚
      */
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void saveSkuStock(PmsProductParam productParam) {
@@ -365,5 +361,54 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
             skuStockMapper.insert(skuStock);
         }
 
+    }
+
+
+    @Override
+    public Product productInfo(Long id) {
+        return productMapper.selectById(id);
+    }
+
+    @Override
+    public EsProduct productAllInfo(Long id) {
+        EsProduct esProduct = null;
+        //按照id查出商品
+        SearchSourceBuilder builder = new SearchSourceBuilder();
+        builder.query(QueryBuilders.termQuery("id",id));
+
+        Search build = new Search.Builder(builder.toString())
+                .addIndex(EsConstant.PRODUCT_ES_INDEX)
+                .addType(EsConstant.PRODUCT_INFO_ES_TYPE)
+                .build();
+        try {
+            SearchResult execute = jestClient.execute(build);
+            List<SearchResult.Hit<EsProduct, Void>> hits = execute.getHits(EsProduct.class);
+            esProduct = hits.get(0).source;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return esProduct;
+    }
+
+    @Override
+    public EsProduct productSkuInfo(Long id) {
+        EsProduct esProduct = null;
+        //按照id查出商品
+        SearchSourceBuilder builder = new SearchSourceBuilder();
+        builder.query(QueryBuilders.nestedQuery("skuProductInfos",
+                QueryBuilders.termQuery("skuProductInfos.id",id), ScoreMode.None));
+
+        Search build = new Search.Builder(builder.toString())
+                .addIndex(EsConstant.PRODUCT_ES_INDEX)
+                .addType(EsConstant.PRODUCT_INFO_ES_TYPE)
+                .build();
+        try {
+            SearchResult execute = jestClient.execute(build);
+            List<SearchResult.Hit<EsProduct, Void>> hits = execute.getHits(EsProduct.class);
+            esProduct = hits.get(0).source;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return esProduct;
     }
 }

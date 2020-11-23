@@ -157,8 +157,8 @@ public class SearchProductServiceImpl implements SearchProductService {
             //设置高亮结果
             source.setName(title);
             esProducts.add(source);
-        });
-        searchResponse.setProducts(esProducts);
+            });
+            searchResponse.setProducts(esProducts);
 
         //=================提取检索到的商品数据完成===========================
 
